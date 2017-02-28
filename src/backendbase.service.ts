@@ -17,8 +17,6 @@ import {BackendListener, BackendListenerCallback} from './backendlistener';
 
 declare var _: any;
 
-
-
 @Injectable()
 export abstract class BackendBaseService {
   listeners: BackendListener[] = [];
@@ -29,7 +27,9 @@ export abstract class BackendBaseService {
     public realBackend: XHRBackend
   ) {
   }
-
+  /**
+   * if there is no handler, just do the XHR
+   */
   fowardRequest(connection: MockConnection): void {
     // pass through any requests not handled above (updated with suggestion from Ryan's comment to include all request options)
     let realHttp: Http = new Http(this.realBackend, this.options);

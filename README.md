@@ -15,7 +15,7 @@ https://llafuente.github.io/ng2-vs-backend/demo/
 
 ## About
 
-Module to create API Backends for Angular 2
+Module to create Mock API Backends for Angular 2, and if there is no handler found do a XHR.
 
 ## Installation
 
@@ -47,7 +47,7 @@ export class YourModule {
 Extend BackendBaseService with your API declaration.
 
 ```typescript
-import {BackendBaseService} from '../src';
+import {BackendBaseService, ParsedRequest} from 'ng2-vs-backend';
 import {Injectable} from '@angular/core';
 import {MockBackend} from '@angular/http/testing';
 import {
@@ -79,7 +79,7 @@ export class BackendService extends BackendBaseService {
     this.addValuePaginated('GET', '/api/v1/countries2', countries);
 
     // handle request yourself, for example to update a country
-    backendService.addListener('POST', /\/api\/v1\/country\/(.*)/, (p: UrlParams, matches: string[]) => {
+    backendService.addListener('POST', /\/api\/v1\/country\/(.*)/, (p: ParsedRequest, matches: string[]) => {
       // matches is the result of the RegExp sent
       let id: number = parseInt(matches[1], 10);
 
