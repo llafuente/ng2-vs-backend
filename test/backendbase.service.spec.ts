@@ -131,4 +131,57 @@ describe('backend base extension service', () => {
     });
   })));
 
+  it('paginated', async(inject([Http, BackendService], (http: Http, backendService: BackendService) => {
+    backendService.init();
+    backendService.addValuePaginated('GET', '/api/v1/list', [{
+      id: 1, label: 'label-1'
+    }, {
+      id: 2, label: 'label-2'
+    }, {
+      id: 3, label: 'label-3'
+    }, {
+      id: 4, label: 'label-4'
+    }]);
+
+    http.get('/api/v1/list')
+    .subscribe((response: Response) => {
+      console.log(response);
+      expect(response.status).to.equal(200);
+      expect(response.headers).to.not.equal(null);
+      expect(response.headers.get('X-Total-Count')).to.equal('4');
+      expect(response.headers.get('X-Page')).to.equal('0');
+      expect(response.headers.get('X-Limit')).to.equal('10');
+      expect(response.url).to.equal('/api/v1/list');
+    }, (e) => {
+      expect(false).to.equal(true, 'Err subscriber called?');
+    });
+  })));
+
+  it('paginated 2', async(inject([Http, BackendService], (http: Http, backendService: BackendService) => {
+    backendService.init();
+    backendService.addValuePaginated('GET', '/api/v1/list', [{
+      id: 1, label: 'label-1'
+    }, {
+      id: 2, label: 'label-2'
+    }, {
+      id: 3, label: 'label-3'
+    }, {
+      id: 4, label: 'label-4'
+    }]);
+
+    http.get('/api/v1/list?query={"limit":3, "page":1}')
+    .subscribe((response: Response) => {
+      console.log(response);
+      expect(response.status).to.equal(200);
+      expect(response.headers).to.not.equal(null);
+      expect(response.headers.get('X-Total-Count')).to.equal('4');
+      expect(response.headers.get('X-Page')).to.equal('1');
+      expect(response.headers.get('X-Limit')).to.equal('3');
+      expect(response.url).to.equal('/api/v1/list?query={"limit":3, "page":1}');
+      expect(response.json().length).to.equal(1);
+    }, (e) => {
+      expect(false).to.equal(true, 'Err subscriber called?');
+    });
+  })));
+
 });

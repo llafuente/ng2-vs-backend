@@ -146,10 +146,12 @@ export abstract class BackendBaseService {
         headers.set('X-Total-Count', '' + value.length);
         headers.set('X-Page', '' + query.page);
         headers.set('X-Limit', '' + query.limit);
-
-        return ret;
       } else {
         ret = value;
+
+        headers.set('X-Total-Count', '' + value.length);
+        headers.set('X-Page', '0');
+        headers.set('X-Limit', '10');
       }
 
       return new ResponseOptions({
