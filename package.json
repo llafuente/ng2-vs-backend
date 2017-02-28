@@ -1,7 +1,7 @@
 {
   "name": "ng2-vs-backend",
   "version": "0.0.0",
-  "description": "Module to create API Backends for Angular 2",
+  "description": "Abstract class to create API Backends for Angular 2 as service with XHR fallback",
   "main": "./dist/umd/ng2-vs-backend.js",
   "module": "./dist/esm/src/index.js",
   "typings": "./dist/esm/src/index.d.ts",
@@ -37,6 +37,7 @@
   "homepage": "https://github.com/llafuente/ng2-vs-backend#readme",
   "devDependencies": {
     "@angular/common": "~2.0.0",
+    "@angular/http": "~2.0.0",
     "@angular/compiler": "~2.0.0",
     "@angular/compiler-cli": "~0.6.3",
     "@angular/core": "~2.0.0",

@@ -1,9 +1,5 @@
 # Very simple Backend for Angular 2
 [![Build Status](https://travis-ci.org/llafuente/ng2-vs-backend.svg?branch=master)](https://travis-ci.org/llafuente/ng2-vs-backend)
-[![npm version](https://badge.fury.io/js/ng2-vs-backend.svg)](http://badge.fury.io/js/ng2-vs-backend)
-[![devDependency Status](https://david-dm.org/llafuente/ng2-vs-backend/dev-status.svg)](https://david-dm.org/llafuente/ng2-vs-backend#info=devDependencies)
-[![GitHub issues](https://img.shields.io/github/issues/llafuente/ng2-vs-backend.svg)](https://github.com/llafuente/ng2-vs-backend/issues)
-[![GitHub stars](https://img.shields.io/github/stars/llafuente/ng2-vs-backend.svg)](https://github.com/llafuente/ng2-vs-backend/stargazers)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/llafuente/ng2-vs-backend/master/LICENSE)
 
 ## Demo
@@ -28,18 +24,70 @@ Install through npm:
 npm install --save ng2-vs-backend
 ```
 
-Then use it in your app like so:
+Import VSBackendModule in your module
 
 ```typescript
-import {Component} from '@angular/core';
-import {HelloWorld} from 'ng2-vs-backend';
+import {NgModule} from '@angular/core';
+import {BackendService} from './backendservice';
+import {VSBackendModule} from 'ng2-vs-backend';
 
-@Component({
-  selector: 'demo-app',
-  directives: [HelloWorld],
-  template: '<hello-world></hello-world>'
+@NgModule({
+  imports: [VSBackendModule],
+  providers: [
+    BackendService, // this extends BackendBaseService
+  ]
 })
-export class DemoApp {}
+export class DemoModule {}
+```
+
+Extend BackendBaseService with your API declaration.
+
+```typescript
+import {BackendBaseService} from '../src';
+import {Injectable} from '@angular/core';
+import {MockBackend} from '@angular/http/testing';
+import {
+  BaseRequestOptions,
+  ResponseOptions,
+  Headers,
+  XHRBackend,
+  RequestOptions,
+} from '@angular/http';
+
+@Injectable()
+export class BackendService extends BackendBaseService {
+  constructor(
+    public backend: MockBackend,
+    public options: BaseRequestOptions,
+    public realBackend: XHRBackend
+  ) {
+    super(backend, options, realBackend);
+  }
+
+  init(): void {
+    // just return a value
+    let countries: any[] = [
+      {id: 1, label: 'Spain'},
+      {id: 2, label: 'France'},
+    ];
+    this.addValue('GET', '/api/v1/countries', countries);
+
+    this.addValuePaginated('GET', '/api/v1/countries2', countries);
+
+    // handle request yourself, for example to update a country
+    backendService.addListener('POST', /\/api\/v1\/country\/(.*)/, (p: UrlParams, matches: string[]) => {
+      // matches is the result of the RegExp sent
+      let id: number = parseInt(matches[1], 10);
+
+      countries[id].label = body.label;
+
+      return new ResponseOptions({
+        status: 204
+      });
+    });
+  }
+}
+
 ```
 
 You may also find it useful to view the [demo source](https://github.com/llafuente/ng2-vs-backend/blob/master/demo/demo.ts).
