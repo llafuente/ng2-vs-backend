@@ -37,7 +37,11 @@ import {VSBackendModule} from 'ng2-vs-backend';
     BackendService, // this extends BackendBaseService
   ]
 })
-export class DemoModule {}
+export class YourModule {
+  constructor(backendService: BackendService) {
+    backendService.init(); // initialize now!
+  }
+}
 ```
 
 Extend BackendBaseService with your API declaration.

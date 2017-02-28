@@ -1,6 +1,6 @@
 import {URLSearchParams} from '@angular/http';
 
-export class UrlParams {
+export class ParsedRequest {
   method: string = null;
   uri: string = null;
   params: any = {};

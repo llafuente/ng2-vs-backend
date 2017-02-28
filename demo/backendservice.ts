@@ -20,7 +20,9 @@ export class BackendService extends BackendBaseService {
   }
 
   init(): void {
-    let countries = [
+    super.init();
+
+    let countries: any = [
       {id: 0, label: 'Spain'},
       {id: 1, label: 'France'},
       {id: 2, label: 'Italy'},

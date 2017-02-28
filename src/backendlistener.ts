@@ -1,8 +1,8 @@
-import {UrlParams} from './urlparams';
+import {ParsedRequest} from './parsedrequest';
 import {Headers, ResponseOptions} from '@angular/http';
 
 export interface BackendListenerCallback {
-    (p: UrlParams, matches: string[]): ResponseOptions;
+    (p: ParsedRequest, matches: string[]): ResponseOptions;
 }
 
 export class BackendListener {
@@ -14,18 +14,13 @@ export class BackendListener {
   cb: BackendListenerCallback = null;
   value: any = null;
 
-  match(p: UrlParams): boolean {
-    //console.log('method', this.method, p.method);
-
+  match(p: ParsedRequest): boolean {
     if (this.method !== p.method) {
       return false;
     }
 
-    //console.log('method', this.uri, p.uri);
-
     if ('string' === typeof this.uri) {
       if (p.uri === this.uri) {
-        //console.log('match!!');
         return true;
       }
       return false;
@@ -33,7 +28,7 @@ export class BackendListener {
     return p.uri.match(this.uri) != null;
   }
 
-  getResponse(p: UrlParams): ResponseOptions {
+  getResponse(p: ParsedRequest): ResponseOptions {
     let ret: any;
 
     if (this.cb != null) {

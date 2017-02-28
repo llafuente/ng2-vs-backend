@@ -2,7 +2,7 @@ import {
   inject, ComponentFixture, TestBed, async
 } from '@angular/core/testing';
 import {expect} from 'chai';
-import {BackendBaseService, VSBackendModule, UrlParams} from '../src';
+import {BackendBaseService, VSBackendModule, ParsedRequest} from '../src';
 import {Injectable} from '@angular/core';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 import {
@@ -34,8 +34,8 @@ export class BackendService extends BackendBaseService {
     super(backend, options, realBackend);
   }
 
-  ngOnInit(): void {
-    super.ngOnInit();
+  init(): void {
+    super.init();
 
     this.addValue('GET', '/api/v1/countries', this.countries);
   }
@@ -56,7 +56,7 @@ describe('backend base extension service', () => {
 
   it('Well defined listeners', inject([BackendService], (backendService: BackendService) => {
     // manually call
-    backendService.ngOnInit();
+    backendService.init();
 
     expect(backendService.listeners).instanceof(Array);
     expect(backendService.listeners).has.length(1);
@@ -68,7 +68,7 @@ describe('backend base extension service', () => {
   }));
 
   it('get countries', inject([Http, BackendService], (http: Http, backendService: BackendService) => {
-    backendService.ngOnInit();
+    backendService.init();
 
     http.get('/api/v1/countries')
     .subscribe((response: Response) => {
@@ -81,7 +81,7 @@ describe('backend base extension service', () => {
   }));
 
   it('modify a country and get the modification', inject([Http, BackendService], (http: Http, backendService: BackendService) => {
-    backendService.ngOnInit();
+    backendService.init();
     backendService.countries[0].label = 'España!';
 
     http.get('/api/v1/countries')
@@ -96,7 +96,7 @@ describe('backend base extension service', () => {
   }));
 
   it('fail 404', async(inject([Http, BackendService], (http: Http, backendService: BackendService) => {
-    backendService.ngOnInit();
+    backendService.init();
 
     http.get('/bad-request')
     .subscribe((response: Response) => {
@@ -108,8 +108,8 @@ describe('backend base extension service', () => {
   })));
 
   it('listener', async(inject([Http, BackendService], (http: Http, backendService: BackendService) => {
-    backendService.ngOnInit();
-    backendService.addListener('POST', /\/api\/v1\/country\/(.*)/, (p: UrlParams, matches: string[]) => {
+    backendService.init();
+    backendService.addListener('POST', /\/api\/v1\/country\/(.*)/, (p: ParsedRequest, matches: string[]) => {
       let id: number = parseInt(matches[1], 10);
       expect(id).to.equal(1);
 

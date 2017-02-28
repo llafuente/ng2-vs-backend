@@ -2,4 +2,4 @@
 export * from './vsbackend.module';
 export * from './backendbase.service';
 export * from './backendlistener';
-export * from './urlparams';
+export * from './parsedrequest';

@@ -12,7 +12,7 @@ import {
   URLSearchParams
 } from '@angular/http';
 
-import {UrlParams} from './urlparams';
+import {ParsedRequest} from './parsedrequest';
 import {BackendListener, BackendListenerCallback} from './backendlistener';
 
 declare var _: any;
@@ -20,7 +20,7 @@ declare var _: any;
 
 
 @Injectable()
-export /*abstract*/ class BackendBaseService extends OnInit {
+export abstract class BackendBaseService {
   listeners: BackendListener[] = [];
 
   constructor(
@@ -28,7 +28,6 @@ export /*abstract*/ class BackendBaseService extends OnInit {
     public options: BaseRequestOptions,
     public realBackend: XHRBackend
   ) {
-    super();
   }
 
   fowardRequest(connection: MockConnection): void {
@@ -53,8 +52,8 @@ export /*abstract*/ class BackendBaseService extends OnInit {
   /**
    * It assume body is JSON
    */
-  parseParams(connection: MockConnection): UrlParams {
-    var p: UrlParams = new UrlParams();
+  parseParams(connection: MockConnection): ParsedRequest {
+    var p: ParsedRequest = new ParsedRequest();
     p.setMethod(connection.request.method);
     p.parseUrl(connection.request.url);
     // TODO handle request type!
@@ -62,7 +61,7 @@ export /*abstract*/ class BackendBaseService extends OnInit {
     if (body && body.length) {
       try {
         p.body = JSON.parse(body);
-      } catch(e) {
+      } catch (e) {
         console.error('invalid JSON found in the body');
       }
     }
@@ -75,17 +74,17 @@ export /*abstract*/ class BackendBaseService extends OnInit {
    * handle a request. Search for a listener/value if not found do a XHR
    */
   handleRequest(connection: MockConnection): void {
-    //console.log('Intercepted Request:', JSON.stringify(connection.request, null, 2));
+    //console.info('Intercepted Request:', JSON.stringify(connection.request, null, 2));
 
     let params: any = this.parseParams(connection);
-    console.info('handleRequest to', params.uri, this.listeners);
+    // console.info('handleRequest to', params.uri, this.listeners);
 
     let rOpts: ResponseOptions = null;
 
     for (let i: number = 0; i < this.listeners.length; ++i) {
       if (this.listeners[i].match(params)) {
         rOpts = this.listeners[i].getResponse(params);
-        console.info('Intercepted Request: response', rOpts);
+        // console.info('Intercepted Request: response', rOpts);
       }
     }
 
@@ -127,7 +126,7 @@ export /*abstract*/ class BackendBaseService extends OnInit {
     var l: BackendListener = new BackendListener();
     l.method = method;
     l.uri = uri;
-    l.cb = (p: UrlParams) => {
+    l.cb = (p: ParsedRequest) => {
       let querystr: string[] = p.query.get('query');
       let ret: any;
       let headers: Headers = new Headers();
@@ -159,7 +158,7 @@ export /*abstract*/ class BackendBaseService extends OnInit {
     this.listeners.push(l);
   }
 
-  ngOnInit(): void {
+  init(): void {
     this.backend.connections.subscribe(this.handleRequest.bind(this));
   }
 }

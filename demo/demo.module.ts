@@ -14,4 +14,8 @@ import {MockBackend} from '@angular/http/testing';
     BackendService,
   ]
 })
-export class DemoModule {}
+export class DemoModule {
+  constructor(backendService: BackendService) {
+    backendService.init();
+  }
+}
