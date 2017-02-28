@@ -69,6 +69,7 @@ export class BackendService extends BackendBaseService {
   }
 
   init(): void {
+    super.init();
     // just return a value
     let countries: any[] = [
       {id: 1, label: 'Spain'},

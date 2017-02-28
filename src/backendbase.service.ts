@@ -15,8 +15,6 @@ import {
 import {ParsedRequest} from './parsedrequest';
 import {BackendListener, BackendListenerCallback} from './backendlistener';
 
-declare var _: any;
-
 @Injectable()
 export abstract class BackendBaseService {
   listeners: BackendListener[] = [];
@@ -90,6 +88,12 @@ export abstract class BackendBaseService {
 
     if (rOpts != null) {
       //console.info('response found!', response);
+
+      // Angular 2 do not set proper defaults if you create the ResponseOptions
+      rOpts.headers = rOpts.headers || new Headers();
+      rOpts.url = rOpts.url || connection.request.url;
+      rOpts.status = rOpts.status || 200;
+      rOpts.body = rOpts.body || null; // TODO maybe empty string?
 
       connection.mockRespond(new Response(rOpts));
     } else {

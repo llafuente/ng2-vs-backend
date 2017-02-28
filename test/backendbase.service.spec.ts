@@ -124,6 +124,8 @@ describe('backend base extension service', () => {
     .subscribe((response: Response) => {
       console.log(response);
       expect(response.status).to.equal(204);
+      expect(response.headers).to.not.equal(null);
+      expect(response.url).to.equal('/api/v1/country/1');
     }, (e) => {
       expect(false).to.equal(true, 'Err subscriber called?');
     });
