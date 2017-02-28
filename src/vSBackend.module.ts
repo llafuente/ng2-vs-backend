@@ -1,7 +1,12 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {HttpModule, Http, BaseRequestOptions} from '@angular/http';
+import {HttpModule, Http, BaseRequestOptions, RequestOptions, XHRBackend} from '@angular/http';
 import {MockBackend} from '@angular/http/testing';
+
+// https://github.com/angular/angular/issues/11262
+export function httpFactory(backend: XHRBackend, defaultOptions: RequestOptions): Http {
+  return new Http(backend, defaultOptions);
+}
 
 @NgModule({
   declarations: [],
@@ -14,7 +19,7 @@ import {MockBackend} from '@angular/http/testing';
     {
       provide: Http,
       deps: [MockBackend, BaseRequestOptions],
-      useFactory: (backend, options) => { return new Http(backend, options); }
+      useFactory: httpFactory
     },
   ]
 })
