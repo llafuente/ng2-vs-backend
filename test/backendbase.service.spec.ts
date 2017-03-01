@@ -11,6 +11,7 @@ import {
   BaseRequestOptions,
   Response,
   ResponseOptions,
+  RequestMethod,
   Headers,
   XHRBackend,
   RequestOptions,
@@ -102,7 +103,6 @@ describe('backend base extension service', () => {
     .subscribe((response: Response) => {
       expect(false).to.equal(true, 'Ok subscriber called?');
     }, (e) => {
-      console.log('e.status', e.status);
       expect(e.status).to.equal(404);
     });
   })));
@@ -122,7 +122,6 @@ describe('backend base extension service', () => {
       label: 'La France'
     })
     .subscribe((response: Response) => {
-      console.log(response);
       expect(response.status).to.equal(204);
       expect(response.headers).to.not.equal(null);
       expect(response.url).to.equal('/api/v1/country/1');
@@ -130,5 +129,124 @@ describe('backend base extension service', () => {
       expect(false).to.equal(true, 'Err subscriber called?');
     });
   })));
+
+  it('paginated', async(inject([Http, BackendService], (http: Http, backendService: BackendService) => {
+    backendService.init();
+    backendService.addValuePaginated('GET', '/api/v1/list', [{
+      id: 1, label: 'label-1'
+    }, {
+      id: 2, label: 'label-2'
+    }, {
+      id: 3, label: 'label-3'
+    }, {
+      id: 4, label: 'label-4'
+    }]);
+
+    http.get('/api/v1/list')
+    .subscribe((response: Response) => {
+      expect(response.status).to.equal(200);
+      expect(response.headers).to.not.equal(null);
+      expect(response.headers.get('X-Total-Count')).to.equal('4');
+      expect(response.headers.get('X-Page')).to.equal('0');
+      expect(response.headers.get('X-Limit')).to.equal('10');
+      expect(response.url).to.equal('/api/v1/list');
+    }, (e) => {
+      expect(false).to.equal(true, 'Err subscriber called?');
+    });
+  })));
+
+  it('paginated 2', async(inject([Http, BackendService], (http: Http, backendService: BackendService) => {
+    backendService.init();
+    backendService.addValuePaginated('GET', '/api/v1/list', [{
+      id: 1, label: 'label-1'
+    }, {
+      id: 2, label: 'label-2'
+    }, {
+      id: 3, label: 'label-3'
+    }, {
+      id: 4, label: 'label-4'
+    }]);
+
+    http.get('/api/v1/list?query={"limit":3, "page":1}')
+    .subscribe((response: Response) => {
+      expect(response.status).to.equal(200);
+      expect(response.headers).to.not.equal(null);
+      expect(response.headers.get('X-Total-Count')).to.equal('4');
+      expect(response.headers.get('X-Page')).to.equal('1');
+      expect(response.headers.get('X-Limit')).to.equal('3');
+      expect(response.url).to.equal('/api/v1/list?query={"limit":3, "page":1}');
+      expect(response.json().length).to.equal(1);
+    }, (e) => {
+      expect(false).to.equal(true, 'Err subscriber called?');
+    });
+  })));
+
+  it('test listener with body', async(inject([Http, BackendService], (http: Http, backendService: BackendService) => {
+    backendService.init();
+    backendService.addListener('POST', /\/api\/v1\/country\/(.*)/, (p: ParsedRequest, matches: string[]) => {
+      let id: number = parseInt(matches[1], 10);
+      expect(p.body).to.not.equal(null, 'Body is null');
+      expect(p.body).to.deep.equal({
+        id: 10,
+        text: 'text'
+      }, 'Body match');
+
+      return new ResponseOptions({
+        status: 204
+      });
+    });
+
+    http.post('/api/v1/country/1', {
+      id: 10,
+      text: 'text'
+    })
+    .subscribe((response: Response) => {
+      expect(response.status).to.equal(204, 'Response is 204');
+      expect(response.headers).to.not.equal(null, 'Headers are not null');
+      expect(response.url).to.equal('/api/v1/country/1', 'url match');
+    }, (e) => {
+      expect(false).to.equal(true, 'Err subscriber called?');
+    });
+  })));
+
+  it('test listener with body 2', async(inject([Http, BackendService], (http: Http, backendService: BackendService) => {
+    backendService.init();
+
+    backendService.addListener('POST', /\/api\/v1\/country\/(.*)/, (p: ParsedRequest, matches: string[]) => {
+      let id: number = parseInt(matches[1], 10);
+      expect(p.body).to.not.equal(null, 'Body is null');
+      expect(p.body).to.deep.equal({
+        id: 10,
+        text: 'text'
+      }, 'Body match');
+
+      return new ResponseOptions({
+        status: 204
+      });
+    });
+
+    let headers: Headers = new Headers();
+    headers.set('Accept', 'application/json');
+    headers.set('Content-Type', 'application/json');
+
+    let rOpts: RequestOptions = new RequestOptions({
+      method: RequestMethod.Post,
+      headers: headers,
+      body: JSON.stringify({
+        id: 10,
+        text: 'text'
+      })
+    });
+
+    http.request('/api/v1/country/1', rOpts)
+    .subscribe((response: Response) => {
+      expect(response.status).to.equal(204, 'Response is 204');
+      expect(response.headers).to.not.equal(null, 'url match');
+      expect(response.url).to.equal('/api/v1/country/1', 'url match');
+    }, (e) => {
+      expect(false).to.equal(true, 'Err subscriber called?');
+    });
+  })));
+
 
 });

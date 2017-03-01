@@ -1,6 +1,6 @@
 {
   "name": "ng2-vs-backend",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Abstract class to create API Backends for Angular 2 as service with XHR fallback",
   "main": "./dist/umd/ng2-vs-backend.js",
   "module": "./dist/esm/src/index.js",
