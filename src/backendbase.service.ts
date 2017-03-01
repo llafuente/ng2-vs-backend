@@ -62,9 +62,9 @@ export abstract class BackendBaseService {
       } catch (e) {
         console.error('invalid JSON found in the body');
       }
+    } else {
+      p.body = null; // TODO maybe {}
     }
-
-    p.body = null; // TODO maybe {}
 
     return p;
   }
