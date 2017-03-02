@@ -18,6 +18,7 @@ import {BackendListener, BackendListenerCallback} from './backendlistener';
 @Injectable()
 export abstract class BackendBaseService {
   listeners: BackendListener[] = [];
+  initialized: boolean = false;
 
   constructor(
     public backend: MockBackend,
@@ -165,6 +166,11 @@ export abstract class BackendBaseService {
   }
 
   init(): void {
+    if (this.initialized) {
+      throw new Error('Already initialized, shouldn\'t subscribe twice to backend.connections!');
+    }
+
+    this.initialized = true;
     this.backend.connections.subscribe(this.handleRequest.bind(this));
   }
 }
