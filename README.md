@@ -84,7 +84,7 @@ export class BackendService extends BackendBaseService {
       // matches is the result of the RegExp sent
       let id: number = parseInt(matches[1], 10);
 
-      countries[id].label = body.label;
+      countries[id].label = p.body.label;
 
       return new ResponseOptions({
         status: 204
